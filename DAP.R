@@ -84,24 +84,23 @@ par(mfrow=c(1,1))
 Output$Burnin.Summary
 
 # Stent vs. CABG (pie[i])
-
-
+posts = Output$Burnin.sims.matrix
+boxplot(posts[1:1000,paste("delta[",1:11,"]",sep="")],range=0,xaxt="n",ylab=expression(paste(delta[i])))
+abline(h=0,lty=3,col="grey")
+text(x=1:11,y=-3.5,namesd[[1]],xpd=T,srt=-45,offset=0,adj=0)
 
 # Stent vs. CABG (pie0)
-posts = Output$Burnin.sims.matrix
+par(mfrow=c(1,2))
+plot(density(posts[,"delta0"]),xlab=expression(paste(delta[0])),main="")
+mtext("A",font=2,side=3,at=-2,line=-1.5)
+
 pp0Stent = ilogit(posts[,"mu0"]-posts[,"delta0"]) # posterior distribution of pie 0 for Stent
 pp0CABG = ilogit(posts[,"mu0"]+posts[,"delta0"]) # posterior distribution of pie 0 for CABG
 plot(density(pp0Stent),xlab=expression(paste(pi[0])),main="")
 lines(density(pp0CABG),lty=2)
 legend("topright",legend=c("Stent","CABG"),lty=1:2,bty="n")
-
-
-
-
-
-
-
-
+mtext("B",font=2,side=3,at=0,line=-1.5)
+par(mfrow=c(1,1))
 
 # Sensitivity analysis
 senan = function(ni=31000, 
@@ -122,8 +121,16 @@ Dn1 = senan(dm=-1)
 M1 = senan(mm=1)
 Mn1 = senan(mm=-1)
 
-# 
+# Set sigma2 prior to no larger than 1/(3.36*2) and 2/3.36
+Sd2 = senan(tm2=1/3.36/2)
+Sm2 = senan(tm2=1/3.36*2)
 
+# Set tau2 prior to no larger than 1/(2.17*2) and 2/2.17
+Td2 = senan(td2=1/2.17/2)
+Tm2 = senan(td2=1/2.17*2)
+
+# Plot sensitivities of priors parameters (mu0, sigma2, delta0, and tau2) on delta0
+plot(density(posts[,"delta0"]),xlab=expression(paste(delta[0])),main="")
 
 
 
