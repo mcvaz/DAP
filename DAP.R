@@ -34,26 +34,26 @@ cat("
       mu[i] ~ dnorm(mu0, tau.mu)
       delta[i] ~ dnorm(delta0, tau.delta)
       }
-    mu0 ~ dnorm(0, 1/3.36)
-    tau.mu ~ dunif(0, 1/3.36)
-    delta0 ~ dnorm(0, 1/2.17)
-    tau.delta ~ dunif(0, 1/2.17)
+    mu0 ~ dnorm(mm,mt)
+    tau.mu ~ dunif(tm1,tm2)
+    delta0 ~ dnorm(dm,dt)
+    tau.delta ~ dunif(td1,td2)
     }    
   ", fill = TRUE)
 sink()
 
 # Jags input info
-data = list(n=nn, y=yy, N=nrow(nn))
-inits = rep(
-  list(list(
-    pie = matrix(rep(0.5,22), ncol= 2, nrow=11, byrow=TRUE),
-    mu = rep(0,11), delta = rep(0,11),
-    mu0 = 0, tau.mu = 0.001, delta0 = 0, tau.delta = 0.001))
-  ,3)
+data = list(n=nn, y=yy, N=nrow(nn), # raw data
+        mm=0, mt=1/3.36, tm1=0, tm2=1/3.36, dm=0, dt=1/2.17, td1=0, td2=1/2.17) # parameters that define the prior distributions
+inits = rep(list(list(
+      pie=matrix(rep(0.5,22), ncol=2, nrow=11, byrow=TRUE), # death probabilities per study per treatment
+      mu=rep(0,11), delta=rep(0,11), # study-level parameters
+      mu0=0, tau.mu=0.01, delta0=0, tau.delta=0.01 # hyper-parameters to be estimated
+      )),3) # number of chains
 params = c("pie[1:11,1:2]","mu[1:11]","delta[1:11]","mu0","delta0","tau.mu","tau.delta")
 
 # Jags output
-model.out = jags(data=data, inits= NULL, parameter=params, "model.txt", n.chains=3, n.iter=101000, n.burnin=0, n.thin=20, DIC=F)
+model.out = jags(data=data, inits=NULL, parameter=params, "model.txt", n.chains=3, n.iter=101000, n.burnin=0, n.thin=20, DIC=F)
 outparams = dimnames(model.out$BUGSoutput$sims.array)[[3]] # all parameter names estimated by jags
 
 # Take the first 1000 runs as burnin
@@ -85,6 +85,8 @@ Output$Burnin.Summary
 
 # Stent vs. CABG (pie[i])
 
+
+
 # Stent vs. CABG (pie0)
 posts = Output$Burnin.sims.matrix
 pp0Stent = ilogit(posts[,"mu0"]-posts[,"delta0"]) # posterior distribution of pie 0 for Stent
@@ -93,6 +95,34 @@ plot(density(pp0Stent),xlab=expression(paste(pi[0])),main="")
 lines(density(pp0CABG),lty=2)
 legend("topright",legend=c("Stent","CABG"),lty=1:2,bty="n")
 
+
+
+
+
+
+
+
+
+# Sensitivity analysis
+senan = function(ni=31000, 
+                 mm=0, mt=1/3.36, tm1=0, tm2=1/3.36, 
+                 dm=0, dt=1/2.17, td1=0, td2=1/2.17){
+  data = list(n=nn, y=yy, N=nrow(nn),
+                mm=mm, mt=mt, tm1=tm1, tm2=tm2, dm=dm, dt=dt, td1=td1, td2=td2) 
+  model.out = jags(data=data, inits=NULL, parameter=params, "model.txt", n.chains=3, n.iter=ni, n.burnin=0, n.thin=20, DIC=F)
+  Output = AddBurnin(model.out$BUGSoutput$sims.array, burnin=1000,n.thin=1)
+  return(list(Output$Burnin.Summary,Output$Burnin.sims.matrix[,"delta0"]))
+  }
+
+# Set delta0 prior to be centered at 1 and -1
+D1 = senan(dm=1)
+Dn1 = senan(dm=-1)
+
+# Set mu0 prior to be centered around 1 and -1
+M1 = senan(mm=1)
+Mn1 = senan(mm=-1)
+
+# 
 
 
 

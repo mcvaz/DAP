@@ -8,9 +8,9 @@
       mu[i] ~ dnorm(mu0, tau.mu)
       delta[i] ~ dnorm(delta0, tau.delta)
       }
-    mu0 ~ dnorm(0, 1/3.36)
-    tau.mu ~ dunif(0, 1/3.36)
-    delta0 ~ dnorm(0, 1/2.17)
-    tau.delta ~ dunif(0, 1/2.17)
+    mu0 ~ dnorm(mm,mt)
+    tau.mu ~ dunif(tm1,tm2)
+    delta0 ~ dnorm(dm,dt)
+    tau.delta ~ dunif(td1,td2)
     }    
   
