@@ -4,6 +4,7 @@
 library(R2jags)
 library(lattice)
 library(ggplot2)
+library(xtable)
 
 # Useful functions
 source("AddBurnin.R")
@@ -82,6 +83,7 @@ par(mfrow=c(1,1))
 
 # Results
 Output$Burnin.Summary
+xtable(Output$Burnin.Summary[,1:4])
 
 # Stent vs. CABG (pie[i])
 posts = Output$Burnin.sims.matrix
@@ -130,8 +132,36 @@ Td2 = senan(td2=1/2.17/2)
 Tm2 = senan(td2=1/2.17*2)
 
 # Plot sensitivities of priors parameters (mu0, sigma2, delta0, and tau2) on delta0
-plot(density(posts[,"delta0"]),xlab=expression(paste(delta[0])),main="")
+par(mfrow=c(2,2))
+rr = range(density(posts[,"delta0"])$y,
+             density(M1[[2]])$y,
+             density(Mn1[[2]])$y)
+plot(density(posts[,"delta0"]),xlab="",main=expression(bold(paste(mu[0]))),ylim=rr)
+lines(density(M1[[2]]),lty=2)
+lines(density(Mn1[[2]]),lty=3)
+legend(x=1,y=.9,lty=c(2,1,3),c(expression(paste(mu[0]," = -1")),expression(paste(mu[0]," = 0")),expression(paste(mu[0]," = 1"))),bty="n",y.intersp=1.5,cex=.8)
+  
+rr = range(density(posts[,"delta0"])$y,
+           density(Sd2[[2]])$y,
+           density(Sm2[[2]])$y)
+plot(density(posts[,"delta0"]),xlab="",main=expression(bold(paste(sigma^2))),ylim=rr,ylab="")
+lines(density(Sd2[[2]]),lty=2)
+lines(density(Sm2[[2]]),lty=3)
+legend(x=.6,y=.85,lty=c(2,1,3),c(expression(paste(sigma^2," = 0.15")),expression(paste(sigma^2," = 0.30")),expression(paste(sigma^2," = 0.60"))),bty="n",y.intersp=1.5,cex=.8)
 
+rr = range(density(posts[,"delta0"])$y,
+           density(D1[[2]])$y,
+           density(Dn1[[2]])$y)
+plot(density(posts[,"delta0"]),xlab=expression(paste(delta[0])),main=expression(bold(paste(delta[0]))),ylim=rr)
+lines(density(D1[[2]]),lty=2)
+lines(density(Dn1[[2]]),lty=3)
+legend(x=1,y=.82,lty=c(2,1,3),c(expression(paste(delta[0]," = -1")),expression(paste(delta[0]," = 0")),expression(paste(delta[0]," = 1"))),bty="n",y.intersp=1.5,cex=.8)
 
-
-
+rr = range(density(posts[,"delta0"])$y,
+           density(Td2[[2]])$y,
+           density(Tm2[[2]])$y)
+plot(density(posts[,"delta0"]),xlab=expression(paste(delta[0])),main=expression(bold(paste(tau^2))),ylim=rr,ylab="")
+lines(density(Td2[[2]]),lty=2)
+lines(density(Tm2[[2]]),lty=3)
+legend(x=.6,y=1,lty=c(2,1,3),c(expression(paste(tau^2," = 0.23")),expression(paste(tau^2," = 0.46")),expression(paste(tau^2," = 0.92"))),bty="n",y.intersp=1.5,cex=.8)
+par(mfrow=c(1,1))
