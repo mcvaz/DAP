@@ -163,7 +163,7 @@ rr = range(density(posts[,"delta0"])$y,
 plot(density(posts[,"delta0"]),xlab="",main=expression(bold(paste(sigma^2))),ylim=rr,ylab="")
 lines(density(Sd2[[2]]),lty=2)
 lines(density(Sm2[[2]]),lty=3)
-legend(x=.6,y=.85,lty=c(2,1,3),c(expression(paste(sigma^2," = 0.15")),expression(paste(sigma^2," = 0.30")),expression(paste(sigma^2," = 0.60"))),bty="n",y.intersp=1.5,cex=.8)
+legend(x=.6,y=.85,lty=c(2,1,3),c(expression(paste(sigma^2," = 6.72")),expression(paste(sigma^2," = 3.36")),expression(paste(sigma^2," = 1.68"))),bty="n",y.intersp=1.5,cex=.8)
 
 rr = range(density(posts[,"delta0"])$y,
            density(D1[[2]])$y,
@@ -179,5 +179,5 @@ rr = range(density(posts[,"delta0"])$y,
 plot(density(posts[,"delta0"]),xlab=expression(paste(delta[0])),main=expression(bold(paste(tau^2))),ylim=rr,ylab="")
 lines(density(Td2[[2]]),lty=2)
 lines(density(Tm2[[2]]),lty=3)
-legend(x=.6,y=1,lty=c(2,1,3),c(expression(paste(tau^2," = 0.23")),expression(paste(tau^2," = 0.46")),expression(paste(tau^2," = 0.92"))),bty="n",y.intersp=1.5,cex=.8)
+legend(x=.6,y=1,lty=c(2,1,3),c(expression(paste(tau^2," = 4.34")),expression(paste(tau^2," = 2.17")),expression(paste(tau^2," = 1.09"))),bty="n",y.intersp=1.5,cex=.8)
 par(mfrow=c(1,1))
