@@ -60,7 +60,7 @@ outparams = dimnames(model.out$BUGSoutput$sims.array)[[3]] # all parameter names
 # Take the first 1000 runs as burnin
 Output = AddBurnin(model.out$BUGSoutput$sims.array, burnin=1000,n.thin=1)
 
-# Checking for MCMC convergence - 
+# Checking for MCMC convergence
 pdf("acf.pdf",paper="letter")
 par(mfrow=c(2,3))
 for(i in outparams){
@@ -68,6 +68,14 @@ for(i in outparams){
   }
 dev.off()
 par(mfrow=c(1,1))
+
+par(mfrow=c(2,3))
+for(i in c("delta0","delta[1]","mu0","mu[1]","tau.delta","tau.mu")){
+  acf(model.out$BUGSoutput$sims.array[1:5000, 1, i], lag.max= 160, main=i)
+  }
+par(mfrow=c(1,1))
+
+
 
 # Time series
 cols = rainbow(3,alpha=0.7)
@@ -81,7 +89,15 @@ for(i in outparams){
 dev.off()
 par(mfrow=c(1,1))
 
-# Results
+par(mfrow=c(3,2),mar=c(1, 4, 4, 2) + 0.1)
+for(i in c("delta0","delta[1]","mu0","mu[1]","tau.delta","tau.mu")){
+  plot(model.out$BUGSoutput$sims.array[1:1000, 1, i], type="l", col=cols[1], main=i, ylab="", xlab="Iteration")
+  lines(model.out$BUGSoutput$sims.array[1:1000, 2, i], type="l", col=cols[2])
+  lines(model.out$BUGSoutput$sims.array[1:1000, 3, i], type="l", col=cols[3])  
+}
+par(mfrow=c(1,1),mar=c(5, 4, 4, 2) + 0.1)
+
+# Main results
 Output$Burnin.Summary
 xtable(Output$Burnin.Summary[,1:4])
 
